@@ -1,0 +1,98 @@
+docker como client
+
+	docker container ...
+
+docker container run hello-world #hello-world = imagem salva em cache
+
+run:
+docker image pull 		# download
+docker container create # criação
+docker container start  # execucao
+docker container exec 	# exec modo interativo(diferente modo daemon: background)
+
+
+###  Modo Interativo ####
+
+bash --version
+#GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)
+
+###  docker container run --<par> <image> <command> ###
+
+docker container run debian bash --version
+#GNU bash, version 5.0.3(1)-release (x86_64-pc-linux-gnu)
+
+docker container ps
+docker container ps -a #ate os que foram parados
+
+docker container run --rm debian bash --version #rm: remove após execucao
+
+docker container run -it debian bash
+
+
+### Nomeando container(reutilização) ###
+# run: sempre cria um novo container
+docker container run --name myDebCont -it debian bash
+docker container ls
+docker container ls -a
+docker container start -ai myDebCont # a:attach(anexar ao terminal)
+#root@db8283e0cad3:/# 
+
+### Mapear portas no Container ###
+docker container run -p 8080:80 nginx   # -p out(8080) -> in(80)
+# 1) localhost:8080
+# 2) curl http://localhost:8080
+<!DOCTYPE html>
+<title>Welcome to nginx!</title>
+
+### Mapeamento de volumes ###
+pasta local: /home/ytallo/curso-docker/ex-volume/html/index.html
+pasta container: /usr/share/nginx/html nginx
+
+docker container run -p 8080:80 -v $(pwd):/usr/share/nginx/html nginx
+
+curl localhost:8080
+# <html>
+# </head>
+# <body>
+    # <h1>
+        # Curso de Docler
+    # </h1>
+# </body>
+# </html>
+
+
+
+### Rodar Servidor em Background(Daemon): -d ###
+
+docker container run -d --name ex-daemon-basic -p 8080:80 -v $(pwd)/html:/usr/share/nginx/html nginx
+#53597cef9ec1ca2ad6e0f6b69864dab8ac654417d024d80f40849361c4a05a38
+docker ps
+docker container stop ex-daemon-basic
+
+docker container start ex-daemon-basic
+docker container restart ex-daemon-basic
+docker container stop ex-daemon-basic
+
+docker container ls
+docker container ps
+docker container ls -a
+docker container logs ex-daemon-basic
+docker container inspect ex-daemon-basic
+docker container exec ex-daemon-basic uname -or
+#4.19.128-microsoft-standard GNU/Linux
+
+
+docker container ls
+docker image ls
+docker volume ls
+
+docker container rm
+docker image rm
+docker volume rm
+
+
+
+
+
+
+
