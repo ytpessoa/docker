@@ -1,0 +1,20 @@
+version: '3'
+services: 
+  db:
+    image: mongo:3.4
+  backend:
+    image: node:8.1
+    volumes:
+      - ./backend:/backend #mapear: ./backend(local) => /backend(imagem). Pegar "app.js" e "package.json"
+    ports: 
+      - 3000:3000
+    command: bash -c "cd /backend && npm i && node app" # npm i: instala dependencias ; node app: roda Node chamada app.js
+  frontend:
+    image: nginx:1.13
+    volumes: 
+      - ./frontend:/usr/share/nginx/html/ #mapear: Pegar index.html e colocar na pasta do nginx na imagem
+    ports: 
+      - 8080:80 # 80(fora):80(nginx padrão)
+    
+
+  
