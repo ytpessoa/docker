@@ -1,0 +1,73 @@
+#set de funcionalidades do compose: version 3
+version: '3'
+
+volumes: 
+  dados: 
+
+networks: 
+  banco:
+  web:
+  fila:
+
+services: 
+  db:
+    image: postgres:9.6
+    environment: 
+    - POSTGRES_PASSWORD=docker
+    - POSTGRES_USER=docker
+    volumes: 
+      #Volumes dos dados:
+      - dados:/var/lib/postgresql/data
+      #Scripts:
+      - ./scripts:/scripts #mapeamento para acessar: "host:container". a partir do container, tenho acesso a host.
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql #inicializar banco
+    networks: 
+      - banco #pertence a rede banco
+  frontend:
+    image: nginx:1.13
+    volumes: 
+      # Site: pasta:pasta
+      - ./web:/usr/share/nginx/html/
+      # Arquivo de Configuracao Nginx(Proxy Reverso): arquivo:arquivo
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports: 
+      - 8080:80
+    networks: 
+      - web
+    depends_on:
+      - app #depende ordem dos conteineres
+  app:
+    image: python:3.6
+    volumes:
+      #Aplicacao:
+      - ./app:/app
+    working_dir: /app
+    command: bash ./app.sh   
+    networks: 
+      - banco
+      - web
+      - fila
+    depends_on:
+      - db
+      - queue
+    environment:
+      - DB_NAME=email_sender_old
+
+  queue:
+    image: redis:3.2
+    networks: 
+      - fila
+  worker:
+    #image: python:3.6
+    build: worker # worker/Dockerfile
+    volumes:
+      #Codigo fonte do Worker
+      - ./worker:/worker
+    working_dir: /worker
+    command: worker.py # passado como parametro do entrypoint do Dockerfile
+    networks: 
+      - fila
+    depends_on:
+      - queue
+
+
