@@ -1,0 +1,38 @@
+docker ps -a
+docker images
+
+docker -it --rm ubuntu:latest bash
+
+
+docker pull ubuntu 
+
+
+docker rmi 
+
+
+
+docker build -t ytpessoa/tempest-challenge:1.0.2 .
+docker images
+
+docker run -it --rm -p 8080:5000 ytpessoa/tempest-challenge /bin/sh
+
+#Executar
+docker run --rm -e AWS_ACCESS_KEY_ID='' -e AWS_SECRET_ACCESS_KEY='' -e AWS_DEFAULT_REGION='us-east-2'  -p 5000:5000 ytpessoa/tempest-challenge:1.0.3
+
+
+
+
+docker rm $(docker ps -a -q) -f
+docker exec -it edac585104f7 /bin/sh
+
+
+docker login -u ytpessoa
+docker push [OPTIONS] NAME[:TAG]
+
+#AWS
+aws configure
+aws iam list-users
+
+
+
+
